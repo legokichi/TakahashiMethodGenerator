@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>高橋メソッドジェネレータ</title>
+<style>
+*{
+  margin: 0px;
+  border: none;
+  padding:0px;
+}
+body{
+  overflow: hidden;
+}
+.page{
+  display:  table;
+  position: absolute;
+  top:    0px;
+  left:   0px;
+  width: 100%;
+  height:100%;
+  background-color: white;
+}
+.vertical{
+  display:  table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+</style>
+<script>
+window.onload = function(){
+  var pageNum = Number(location.hash.substring(1)),
+      width   = document.documentElement.clientWidth,
+      height  = document.documentElement.clientHeight,
+      body    = document.getElementsByTagName("body")[0],
+      pre     = document.getElementById("takahashi"),
+      inner   = pre.innerHTML,
+      textedPages = inner.split("\r\n").join("\n")
+                         .split("\r"  ).join("\n")
+                         .split("\n\n"),
+      taggedPages = textedPages.map(function(textedPage){
+        var linesLength = textedPage.split("\n").length,
+            maxLineChar = textedPage.split("\n")
+                                    .map(function(line){
+                                      return line.length;
+                                    })
+                                    .sort(function(a, b){
+                                      return a < b;
+                                    })[0],
+            content     = textedPage.split("\n").join("<br />"),
+            vertical    = document.createElement("div"),
+            taggedPage  = document.createElement("div"),
+            fontSize  = (width-100)/maxLineChar;
+        vertical.setAttribute("class", "vertical");
+        vertical.innerHTML = content;
+        taggedPage.setAttribute("class", "page");
+        taggedPage.appendChild(vertical);
+        taggedPage.style.fontSize = linesLength*fontSize > height ?
+                                    (height-100)/linesLength + "px" :
+                                    fontSize + "px";
+        return taggedPage;
+      });
+  body.removeChild(pre);
+  if(isFinite(pageNum)){
+    for(var i=0; i<pageNum; i++){
+      taggedPages[i].style.left = "100%";
+    }
+  }
+  taggedPages.forEach(function(taggedPage){
+    taggedPage.addEventListener("click", function(ev){
+      if(width/2 > ev.pageX){
+        taggedPages[pageNum-1].style.left = "0px";
+        location.hash = "#" + --pageNum;
+      }else{
+        this.style.left = "100%";
+        location.hash = "#" + ++pageNum;
+      }
+    });
+  });
+  taggedPages.reverse().forEach(function(taggedPage){
+    body.appendChild(taggedPage);
+  });
+  taggedPages.reverse();
+};
+</script>
+</head>
+<body>
+<pre id="takahashi">
+高橋
+メソッド
+
+プレゼン
+テーションの
+手法
+
+特徴
+
+巨大な
+文字
+
+簡潔な
+言葉
+
+歴史
+
+PowerPoint
+は持っていない
+
+HTML
+
+文字だけ
+で勝負
+
+せめて
+大きく
+
+利点
+
+４つ
+
+（１）
+
+見やすい
+
+（２）
+
+表現が
+簡潔に
+なる
+
+文字を大きく
+する副作用
+
+（３）
+
+発表
+しやすい
+
+（４）
+
+お客さんも
+（たぶん）
+集中しやすい
+
+ご清聴
+ありがとう
+ございました
+
+</pre>
+</body>
+</html>

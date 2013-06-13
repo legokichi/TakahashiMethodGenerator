@@ -27,6 +27,36 @@ body{
   vertical-align: middle;
   text-align: center;
 }
+#timer{
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  z-index: 100;
+}
+#pageNumber{
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  z-index: 100;
+}
+#pageCursor{
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  z-index: 200;
+  width: 2px;
+  height: 1em;
+  background-color: red;
+}
+#timeCursor {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  z-index: 200;
+  width: 2px;
+  height: 1em;
+  background-color: blue;
+}
 </style>
 <script>
 window.onload = function(){
@@ -60,32 +90,52 @@ window.onload = function(){
                                     (height-100)/linesLength + "px" :
                                     fontSize + "px";
         return taggedPage;
-      });
-  body.removeChild(pre);
-  if(isFinite(pageNum)){
-    for(var i=0; i<pageNum; i++){
-      taggedPages[i].style.left = "100%";
-    }
-  }
-  taggedPages.forEach(function(taggedPage){
-    taggedPage.addEventListener("click", function(ev){
-      if(width/2 > ev.pageX){
-        taggedPages[pageNum-1].style.left = "0px";
-        location.hash = "#" + --pageNum;
-      }else{
-        this.style.left = "100%";
-        location.hash = "#" + ++pageNum;
-      }
-    });
-  });
-  taggedPages.reverse().forEach(function(taggedPage){
-    body.appendChild(taggedPage);
-  });
-  taggedPages.reverse();
+      }),
+      pageNumber = document.getElementById("pageNumber"),
+      pageCursor = document.getElementById("pageCursor"),
+      run = (function(){
+        body.removeChild(pre);
+        if(isFinite(pageNum)){
+          for(var i=0; i<pageNum; i++){
+            taggedPages[i].style.left = "100%";
+          }
+        }
+        taggedPages.forEach(function(taggedPage){
+          taggedPage.addEventListener("click", function(ev){
+            if(width/2 > ev.pageX){
+              taggedPages[pageNum-1].style.left = "0px";
+              location.hash = "#" + --pageNum;
+            }else{
+              this.style.left = "100%";
+              location.hash = "#" + ++pageNum;
+            }
+            pageNumber.innerHTML = pageNum+1 + "/" + (textedPages.length-1)
+            pageCursor.style.left = ((pageNum+1)/(textedPages.length-1)*100) + "%"
+          });
+        });
+        taggedPages.reverse().forEach(function(taggedPage){
+          body.appendChild(taggedPage);
+        });
+        taggedPages.reverse();
+      }())
+      timer = document.getElementById("timer"),
+      timeCursor = document.getElementById("timeCursor"),
+      time = 0
+      FINISH_TIME_SEC = document.getElementById("finishTimeSec").innerHTML
+      runTimer = setInterval(function(){
+          timer.innerHTML =  Math.floor(time/60) + "min " + (time%60) + "sec / " + Math.floor(FINISH_TIME_SEC/60) + "min " + (FINISH_TIME_SEC%60) + "sec"
+          timeCursor.style.left = ((time/FINISH_TIME_SEC)*100) + "%"
+          time++
+      }, 1000);
 };
 </script>
 </head>
 <body>
+<div id="timer">null</div>
+<div id="pageNumber">null</div>
+<div id="pageCursor"></div>
+<div id="timeCursor"></div>
+<div id="finishTimeSec">180</div>
 <pre id="takahashi">
 高橋
 メソッド
